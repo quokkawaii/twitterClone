@@ -1,17 +1,57 @@
 import { useState } from "react";
 import styled from "styled-components";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "./firebase";
+import { useNavigate } from "react-router-dom";
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  height: 100%;
+  display : flex;
+  flex-direction : column;
+  align-items : center;
+  width : 420px;
+  padding : 50px 0; 
+`;
 
-const Form = styled.form``;
+const Title = styled.h1`
+  font-size : 42px;
+`;
 
-const Input = styled.input``;
+const Form = styled.form`
+  margin-top : 50px;
+  display : flex;
+  flex-direction : column;
+  gap : 10px;
+  width : 100%;
+`;
+
+const Input = styled.input`
+  padding : 10px 20px;
+  border-radius: 50px;
+  border:none;
+  width: 100%;
+  font-size:16px;
+  &[type="submit"] {
+    cursor: pointer;
+    &:hover {
+      opacity :0.8;
+    }
+  }
+  `;
+
+const Error = styled.span`
+    font-weight : 600;
+    color :red;
+  `;
 
 function CreateAccount() {
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.currentTarget as HTMLInputElement;
@@ -24,14 +64,39 @@ function CreateAccount() {
     }
   };
 
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // console.log(name, email, password);
+    if (isLoading || name === "" || password === "" || email === "") return;
+
+    try {
+      // creat an account
+      const credential = await createUserWithEmailAndPassword(auth, email, password);
+      // set the name of the user 
+      await updateProfile(credential.user, { displayName: name });
+      // redirect to the home page (url 변경)
+      navigate("/");
+
+    } catch (e) {
+
+    } finally {
+      setLoading(true);
+    }
+
+
+  }
+
   return (
     <Wrapper>
-      <Form>
+      <Title>Log into X</Title>
+      <Form onSubmit={onSubmit}>
         <Input
           name="name"
           value={name}
           placeholder="Name"
           type="text"
+          onChange={onChange}
           required
         />
         <Input
@@ -39,6 +104,7 @@ function CreateAccount() {
           value={email}
           placeholder="Email"
           type="email"
+          onChange={onChange}
           required
         />
         <Input
@@ -46,9 +112,11 @@ function CreateAccount() {
           value={password}
           placeholder="Password"
           type="password"
+          onChange={onChange}
           required
         />
-        <Input type="submit" value="Create Account" />
+        <Input type="submit" value={isLoading ? "Loading..." : "Create Account"} />
+        {error !== "" ? <Error>{error}</Error> : null}
       </Form>
     </Wrapper>
   );

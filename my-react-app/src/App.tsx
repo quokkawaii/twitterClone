@@ -1,7 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createGlobalStyle } from "styled-components";
 import reset from "styled-reset";
+import styled from "styled-components";
 import { useState, useEffect } from "react";
+
 
 import { auth } from "./routes/firebase";
 
@@ -26,6 +28,12 @@ const GlobalStyles = createGlobalStyle`
   "Noto Color Emoji";
   }
 
+`;
+
+const Wrapper = styled.div`
+height: 100vh;
+display : flex;
+justify-content: center;
 `;
 
 const router = createBrowserRouter([
@@ -65,9 +73,9 @@ export default function App() {
   }, []);
 
   return (
-    <>
+    <Wrapper>
       <GlobalStyles />
       {isLoading ? <LoadingScreen /> : <RouterProvider router={router} />}
-    </>
+    </Wrapper>
   );
 }

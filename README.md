@@ -262,7 +262,7 @@ npm install firebase
 
 ```typescript
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+// import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAisrlSh0cwH0A8aNX9mfYX68rxVFsxyCo",
@@ -276,7 +276,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app); 
 ```
 
 ### 다음에 구현할것들 순서
@@ -323,3 +323,36 @@ const init = async () => {
   await auth.authStateReady(); // 이외 다양한 기능들이 있음. 비동기 함수이니 await 필수
 };
 ```
+2. 어떤 방식으로 createAccount를 설계 했는지?
+
+- 스타일드 컴포넌트를 사용 
+
+- input 태그에 타입=text와 벨류 + 이벤트를 사용해서 값 처리를 했음 
+
+- input 태그에 타입=submit를 넣어서 form 태그가 작동하게 설계
+
+3. firebase와 소통하기 
+
+- createUserWithEmailAndPassword( auth : Auth, email : string, password : string );
+  - 비동기 함수라 await 필수
+  - Auth는 fireBase안에서 export 하는 값 getAuth(app);
+  - 해당 함수가 정상적으로 돌아가면 user credential (사용자 자격 증명) 이된다.
+  - 기본적으로 해당 이메일이 생성되었거나, 비밀번호 규격이 맞지 않으면 에러
+  - 변수에 return값을 저장했다면 변수.user로 정보 가져올 수 있음.
+
+- try-catch문 이전에 오류 값 1차 걸러내기 (빈값, loading이 true일때)
+
+- 구조
+  - 해당 아이디를 만들수 있나(try문) => 에러 => catch문 실행 => finally 실행
+  - 성공 => finally 실행
+
+- 프로필 업데이트 
+  - 만약 name의 값을 받았다면 프로필 업데이트를 해주자
+  - updateProfile(user :User, {displayName : string, photoURL : string}) => user 제외 다른값은 없어도됨
+
+- 로그인
+  - 해당 정보 입력에 성공하면 자동으로 로그인이 된다고 한다.
+  - useNavigate()로 welcomepage로 이동
+
+
+
